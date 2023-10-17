@@ -1,0 +1,84 @@
+.TopBar {
+    top: 0;
+    position: sticky;
+}
+
+.TopBar h1 {
+    text-align: center;
+    font: bold;
+    font-size: 50px;
+    padding: auto;
+    padding-top: 50px;
+    padding-bottom: 40px;
+    margin: 0;
+    background-color: blanchedalmond;
+}
+
+.TopBar ul {
+    list-style-type: none;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    text-align: center;
+    margin: 0;
+    background-color: rgb(209, 185, 148);
+}
+
+.TopBar li {
+    font-size: 20px;
+    padding: 20px;
+    display: inline-block;
+}
+
+.Navigation {
+    color: black;
+    text-decoration: none;
+}
+
+.Navigation:active {
+    color: red;
+}
+
+.Content {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.Box {
+    border-style: groove;
+    padding: 30px;
+    background-color: rgb(209, 185, 148);
+}
+
+.SubmitButton {
+    font-size: 15px;
+    padding: 15px;
+    background-color: rgb(69, 47, 24);
+    color: rgb(240, 239, 233);
+    border-color: rgb(69, 47, 24);
+}
+
+.SwitchPage h5 {
+    font-size: 15px;
+    color: rgb(69, 47, 24);
+    display: inline;
+}
+
+.SwitchPage button {
+    font-size: 15px;
+    padding: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgb(69, 47, 24);
+    color: rgb(240, 239, 233);
+    border-color: rgb(69, 47, 24);
+    display: inline;
+}
+
+.FormContent, .FormContent label, .FormContent input, .FormContent select, .FormContent textarea {
+    font-size: 20px;
+}
+
+.Error {
+    color: red;
+    font-size: 15px;
+}
