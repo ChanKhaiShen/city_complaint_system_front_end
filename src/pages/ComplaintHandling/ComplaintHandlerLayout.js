@@ -1,11 +1,16 @@
 import { Outlet, Link } from 'react-router-dom';
 
+import env from 'react-dotenv';
+
 import '../Styles.css';
 
 export default function ComplaintHandlerLayout() {
     function logout() {
-        localStorage.clear();
-        window.location.replace('http://localhost:3000/complainthandler');
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('name');
+        localStorage.removeItem('emailAddress');
+        window.location.replace(`http://localhost:${env.PORT}/`);
     }
 
     return (

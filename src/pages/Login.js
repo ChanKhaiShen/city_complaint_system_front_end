@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import md5 from 'md5';
 
+import env from 'react-dotenv';
+
 import Register from './Register';
 import './Styles.css';
 
@@ -32,7 +34,7 @@ export default function Login({setHasToken}) {
         const hashedPassword = md5(password);
         console.log('Login', emailAddress, password, hashedPassword);
 
-        axios.post('http://localhost:5000/login', 
+        axios.post(`${env.SERVER_URL}/login`, 
             {
                 emailAddress: emailAddress,
                 password: hashedPassword

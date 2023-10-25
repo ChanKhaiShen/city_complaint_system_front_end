@@ -1,22 +1,13 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 
+import env from 'react-dotenv';
+
 import '../Styles.css';
 
 export default function LodgeComplaint() {
-    const [categories, setCategories] = useState([  // List of categories and areas will be updated from server
-        {
-            id:0, 
-            name:"No Category"
-        },
-    ]);
-
-    const [areas, setAreas] = useState([ 
-        {
-            id:0, 
-            name:"No Area"
-        }
-    ]);   
+    const [categories, setCategories] = useState([]); // List of categories and areas will be updated from server
+    const [areas, setAreas] = useState([]);   
     
     // Fields
     const [title, setTitle] = useState("");
@@ -40,13 +31,15 @@ export default function LodgeComplaint() {
 
     useEffect(
         ()=>{
-            function getCategories(){
-                if (localStorage.getItem('token') === null) {
-                    window.location.reload();
-                    return;
-                }
+            if (localStorage.getItem('token') === null) {
+                window.location.reload();
+                return;
+            }
 
-                axios.get('http://localhost:5000/allcategories',
+            const promises = [];
+
+            promises.push(new Promise((resolve, reject)=>{
+                axios.get(`${env.SERVER_URL}/allcategories`,
                     {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -56,23 +49,19 @@ export default function LodgeComplaint() {
                     const categories = results.data.categories;
                     console.log('get categories: ' + categories);
                     setCategories(categories);
+                    resolve();
                 }).catch(error => {
                     console.log('categories error: ' + error);
-
                     if (error.response.status != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }
+                    resolve();
                 });
-            }
+            }));
 
-            function getAreas(){
-                if (localStorage.getItem('token') === null) {
-                    window.location.reload();
-                    return;
-                }
-
-                axios.get('http://localhost:5000/allareas',
+            promises.push(new Promise((resolve, reject)=>{
+                axios.get(`${env.SERVER_URL}/allareas`,
                     {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -82,19 +71,23 @@ export default function LodgeComplaint() {
                     const areas = results.data.areas;
                     console.log('areas: ' + areas);
                     setAreas(areas);
+                    resolve();
                 }).catch(error=>{
                     console.log('areas error: ' + error);
-
                     if (error.response.status != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }
-                })
-            }
+                    resolve();
+                });
+            }));
 
-            getCategories();
-            getAreas();
-        }, 
+            Promise.all(promises).then(()=>{
+                console.log('All areas and categories are loaded');
+            }).catch(error=>{
+                console.log('Error loading areas or categories', error);
+            });
+        },
         []
     );
 
@@ -174,7 +167,7 @@ export default function LodgeComplaint() {
 
         console.log('lodge', title, category, description, expectedResult, area, incidentAddress)
 
-        axios.post('http://localhost:5000/lodgecomplaint',
+        axios.post(`${env.SERVER_URL}/lodgecomplaint`,
         {
             title: title,
             category: category,

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import md5 from 'md5';
 
+import env from 'react-dotenv';
+
 import './Styles.css';
 
 export default function Register({setRegistered}) {
@@ -149,13 +151,13 @@ export default function Register({setRegistered}) {
         if (emailAddressError !== '' || passwordError !== '' || nameError !== '' || IC_NumberError !== '' || mobilePhoneNumberError !== '' || homeAddressError !== '' || faxNumberError !== '')
             return;
 
-        if (emailAddress === '' || password === '' || name === '' || IC_Number === '' || mobilePhoneNumber === '') {
+        if (emailAddress.trim() === '' || password.trim() === '' || name.trim() === '' || IC_Number.trim() === '' || mobilePhoneNumber.trim() === '') {
             alert('Please fill in the required fields (email address, password, name, IC number, mobile phone number)');
             return;
         }
 
         console.log('send otp', emailAddress, name);
-        axios.post('http://localhost:5000/registersendotp',
+        axios.post(`${env.SERVER_URL}/registersendotp`,
         {
             emailAddress: emailAddress,
             name: name
@@ -184,15 +186,10 @@ export default function Register({setRegistered}) {
         if (emailAddressError !== '' || passwordError !== '' || nameError !== '' || IC_NumberError !== '' || mobilePhoneNumberError !== '' || homeAddressError !== '' || faxNumberError !== '' || otpError !== '')
             return;
 
-        if (emailAddress === '' || password === '' || name === '' || IC_Number === '' || mobilePhoneNumber === '' || otp === '') {
-            alert('Please fill in the required fields (email address, password, name, IC number, mobile phone number, OTP)');
-            return;
-        }
-
         const hashedPassword = md5(password);
         console.log('Register', emailAddress, password, hashedPassword, name, IC_Number, mobilePhoneNumber, homeAddress, faxNumber, otp);
 
-        axios.post('http://localhost:5000/register', 
+        axios.post(`${env.SERVER_URL}/register`, 
             {
                 emailAddress: emailAddress,
                 password: hashedPassword,
