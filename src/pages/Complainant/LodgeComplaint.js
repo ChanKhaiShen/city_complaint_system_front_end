@@ -52,7 +52,7 @@ export default function LodgeComplaint() {
                     resolve();
                 }).catch(error => {
                     console.log('categories error: ' + error);
-                    if (error.response.status != null && error.response.status === 401) {
+                    if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }
@@ -74,7 +74,7 @@ export default function LodgeComplaint() {
                     resolve();
                 }).catch(error=>{
                     console.log('areas error: ' + error);
-                    if (error.response.status != null && error.response.status === 401) {
+                    if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }

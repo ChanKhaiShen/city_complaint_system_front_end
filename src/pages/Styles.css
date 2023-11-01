@@ -95,6 +95,11 @@
     display: inline;
 }
 
+.InlineChart {
+    display: inline-flex;
+    align-items: center;
+}
+
 .Table {
     overflow-y: auto;
     overflow-x: auto;
@@ -125,4 +130,15 @@
     color: white;
     font-size: 15px;
     padding: 10px;
+}
+
+.DetailsButton {
+    background-color: blue;
+    color: white;
+    font-size: 15px;
+    padding: 10px;
+}
+
+.DetailsContent {
+    font-size: 20px;
 }

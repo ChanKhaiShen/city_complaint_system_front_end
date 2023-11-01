@@ -1,7 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
 
-import env from 'react-dotenv';
-
 import '../Styles.css';
 
 export default function ComplainantLayout() {
@@ -10,7 +8,7 @@ export default function ComplainantLayout() {
         localStorage.removeItem('role');
         localStorage.removeItem('name');
         localStorage.removeItem('emailAddress');
-        window.location.replace(`http://localhost:${env.PORT}/`);
+        window.location.replace('/');
     }
 
     return (

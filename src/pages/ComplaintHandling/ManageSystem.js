@@ -53,7 +53,7 @@ export default function ManageSystem() {
                     resolve();
                 }).catch(error=>{
                     console.log('get categories error', error);
-                    if (error.response.status != null && error.response.status === 401) {
+                    if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }
@@ -80,7 +80,7 @@ export default function ManageSystem() {
                     resolve();
                 }).catch(error=>{
                     console.log('get areas error', error);
-                    if (error.response.status != null && error.response.status === 401) {
+                    if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }
@@ -107,7 +107,7 @@ export default function ManageSystem() {
                     resolve();
                 }).catch(error=>{
                     console.log('get complaint handlers error', error);
-                    if (error.response.status != null && error.response.status === 401) {
+                    if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
                     }
@@ -203,11 +203,11 @@ export default function ManageSystem() {
             setCategories(categories.filter(category => category.name !== categoryName));
         }).catch(error=>{
             console.log('delete category error', error);
-            if (error.response.status != null && error.response.status === 401) {
+            if (error.response != null && error.response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload();
             }
-            else if (error.response.status != null && error.response.status === 400)
+            else if (error.response != null && error.response.status === 400)
                 alert(error.response.data.message);
             else
                 alert('Not deleted');
@@ -233,11 +233,11 @@ export default function ManageSystem() {
             setAreas(areas.filter(area => area.name !== areaName));
         }).catch(error=>{
             console.log('delete area error', error);
-            if (error.response.status != null && error.response.status === 401) {
+            if (error.response != null && error.response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload();
             } 
-            else if (error.response.status != null && error.response.status === 400)
+            else if (error.response != null && error.response.status === 400)
                 alert(error.response.data.message);
             else
                 alert('Not deleted');
@@ -263,11 +263,11 @@ export default function ManageSystem() {
             setComplaintHandlers(complaintHandlers.filter(complaintHandler => complaintHandler.emailAddress !== emailAddress));
         }).catch(error=>{
             console.log('delete complaint handler error', error);
-            if (error.response.status != null && error.response.status === 401) {
+            if (error.response != null && error.response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload();
             }
-            else if (error.response.status != null && error.response.status === 400)
+            else if (error.response != null && error.response.status === 400)
                 alert(error.response.data.message);
             else
                 alert('Not deleted');
@@ -312,10 +312,10 @@ export default function ManageSystem() {
             setNewCategory('');
         }).catch(error=>{
             console.log('add category error', error);
-            if (error.response.status != null && error.response.status === 401) {
+            if (error.response != null && error.response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload();
-            } else if (error.response.status != null && error.response.data.message != null) 
+            } else if (error.response != null && error.response.data.message != null) 
                 alert(error.response.data.message);
             else
                 alert('Not added');
@@ -359,10 +359,10 @@ export default function ManageSystem() {
             setNewArea('');
         }).catch(error=>{
             console.log('add area error', error);
-            if (error.response.status != null && error.response.status === 401) {
+            if (error.response != null && error.response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload();
-            } else if (error.response.status != null && error.response.data.message != null) 
+            } else if (error.response != null && error.response.data.message != null) 
                 alert(error.response.data.message);
             else
                 alert('Not added');
@@ -408,10 +408,10 @@ export default function ManageSystem() {
             setEmailAddress('');
         }).catch(error=>{
             console.log('add complaint handler error', error);
-            if (error.response.status != null && error.response.status === 401) {
+            if (error.response != null && error.response.status === 401) {
                 localStorage.removeItem('token');
                 window.location.reload();
-            } else if (error.response.status != null && error.response.data.message != null) 
+            } else if (error.response != null && error.response.data.message != null) 
                 alert(error.response.data.message);
             else
                 alert('Not added');
@@ -457,15 +457,18 @@ export default function ManageSystem() {
                 </div>
                 <p/>
                 <form onSubmit={addCategory}>
-                    <label className='FormContent'>Add: <input
-                        required
-                        name='newCategory'
-                        value={newCategory}
-                        onChange={handleChange}
-                        placeholder='New Category'
-                        maxLength={50}
-                        size={50}
-                    ></input></label>
+                    <label className='FormContent'>Add: 
+                        &nbsp;  {/* blank space */}
+                        <input
+                            required
+                            name='newCategory'
+                            value={newCategory}
+                            onChange={handleChange}
+                            placeholder='New Category'
+                            maxLength={50}
+                            size={50}
+                        ></input>
+                    </label>
                     <input
                         type='submit'
                         className='AddButton'
@@ -511,15 +514,18 @@ export default function ManageSystem() {
                 </div>
                 <p/>
                 <form onSubmit={addArea}>
-                    <label className='FormContent'>Add: <input
-                        required
-                        name='newArea'
-                        value={newArea}
-                        onChange={handleChange}
-                        placeholder='New Area'
-                        maxLength={50}
-                        size={50}
-                    ></input></label>
+                    <label className='FormContent'>Add: 
+                        &nbsp;
+                        <input
+                            required
+                            name='newArea'
+                            value={newArea}
+                            onChange={handleChange}
+                            placeholder='New Area'
+                            maxLength={50}
+                            size={50}
+                        ></input>
+                    </label>
                     <input
                         type='submit'
                         className='AddButton'
@@ -565,29 +571,33 @@ export default function ManageSystem() {
                 <form onSubmit={addComplaintHandler}>
                     <h3>New Complaint Handler</h3>
 
-                    <label className='FormContent'>Name: <input
-                        required
-                        name='name'
-                        value={name}
-                        onChange={handleChange}
-                        placeholder='Name'
-                        maxLength={50}
-                        size={50}
-                    ></input>
-                    <p className='Error'>{nameError}</p>
+                    <label className='FormContent'>Name: 
+                        &nbsp;
+                        <input
+                            required
+                            name='name'
+                            value={name}
+                            onChange={handleChange}
+                            placeholder='Name'
+                            maxLength={50}
+                            size={50}
+                        ></input>
+                        <p className='Error'>{nameError}</p>
                     </label>
 
                     <p/>
-                    <label className='FormContent'>Email Address: <input
-                        required
-                        name='emailAddress'
-                        value={emailAddress}
-                        onChange={handleChange}
-                        placeholder='Email Address'
-                        maxLength={70}
-                        size={70}
-                    ></input>
-                    <p className='Error'>{emailAddressError}</p>
+                    <label className='FormContent'>Email Address: 
+                        &nbsp;
+                        <input
+                            required
+                            name='emailAddress'
+                            value={emailAddress}
+                            onChange={handleChange}
+                            placeholder='Email Address'
+                            maxLength={70}
+                            size={70}
+                        ></input>
+                        <p className='Error'>{emailAddressError}</p>
                     </label>
 
                     <p/>

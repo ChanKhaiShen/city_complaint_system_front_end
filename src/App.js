@@ -1,29 +1,29 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 import env from "react-dotenv";
 
 import NoPage from "./pages/NoPage";
 import Login from "./pages/Login";
+import SetPassword from "./pages/SetPassword";
+import ManageAccount from "./pages/ManageAccount";
+import CheckComplaint from "./pages/CheckComplaint"
 
 // Complainant
-import ManageAccount from "./pages/ManageAccount";
 import ComplainantLayout from "./pages/Complainant/ComplainantLayout";
 import LodgeComplaint from "./pages/Complainant/LodgeComplaint";
-import CheckComplaint from "./pages/Complainant/CheckComplaint"
 
 // Complaint Handling
 import ComplaintHandlerLayout from './pages/ComplaintHandling/ComplaintHandlerLayout';
 import AdministratorLayout from './pages/ComplaintHandling/AdministratorLayout';
-import ManageComplaints from "./pages/ComplaintHandling/ManageComplaints";
 import ManageSystem from "./pages/ComplaintHandling/ManageSystem";
 import StatisticsReporting from "./pages/ComplaintHandling/StatisticsReporting";
-import axios from "axios";
 
 export default function App() {
   const [hasToken, setHasToken] = useState(localStorage.getItem('token') != null);
 
-  console.log(env.SERVER_URL)
+  console.log(env.SERVER_URL);
 
   useEffect(()=>{
     if (hasToken) {
@@ -43,7 +43,12 @@ export default function App() {
         setHasToken(false);
       })
     }
-  })
+  });
+
+  if (window.location.href === '/setpassword')
+    return (
+      <SetPassword />
+    );
   
   if (!hasToken)
     return (
@@ -71,7 +76,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element = {<ComplaintHandlerLayout/>} >
-            <Route index element = {<ManageComplaints/>} />
+            <Route index element = {<CheckComplaint/>} />
             <Route path="manageaccount" element = {<ManageAccount/>} />
             <Route path="*" element = {<NoPage/>} />
           </Route>
@@ -84,9 +89,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element = {<AdministratorLayout/>} >
-            <Route index element = {<ManageComplaints/>} />
+            <Route index element = {<StatisticsReporting/>} />
             <Route path="managesystem" element = {<ManageSystem/>} />
-            <Route path="statisticsreporting" element = {<StatisticsReporting/>} />
+            <Route path="checkcomplaint" element = {<CheckComplaint/>} />
             <Route path="manageaccount" element = {<ManageAccount/>} />
             <Route path="*" element = {<NoPage/>} />
           </Route>

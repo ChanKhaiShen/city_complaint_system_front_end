@@ -67,6 +67,8 @@ export default function Register({setRegistered}) {
                         errorMessage += errorMessage===""?"Must have upper case alphabet":", upper case alphabet";
                     if (!/[!|@|#|$|%|^|&|*|(|)|+|-|?|.|,]+/.test(password))
                         errorMessage += errorMessage===""?"Must have special character":", special character";
+                    if (!/.{12,20}/.test(password))
+                        errorMessage += errorMessage===""?"Must have length 12-20":", length 12-20";
                     
                     setPasswordError(errorMessage);
                 }
@@ -157,7 +159,7 @@ export default function Register({setRegistered}) {
         }
 
         console.log('send otp', emailAddress, name);
-        axios.post(`${env.SERVER_URL}/registersendotp`,
+        axios.post(`${env.SERVER_URL}/sendotp/register`,
         {
             emailAddress: emailAddress,
             name: name
@@ -185,6 +187,11 @@ export default function Register({setRegistered}) {
 
         if (emailAddressError !== '' || passwordError !== '' || nameError !== '' || IC_NumberError !== '' || mobilePhoneNumberError !== '' || homeAddressError !== '' || faxNumberError !== '' || otpError !== '')
             return;
+
+        if (emailAddress.trim() === '' || password.trim() === '' || name.trim() === '' || IC_Number.trim() === '' || mobilePhoneNumber.trim() === '' || otp.trim() === '') {
+            alert('Please fill in the required fields (email address, password, name, IC number, mobile phone number, otp)');
+            return;
+        }
 
         const hashedPassword = md5(password);
         console.log('Register', emailAddress, password, hashedPassword, name, IC_Number, mobilePhoneNumber, homeAddress, faxNumber, otp);
@@ -364,7 +371,7 @@ export default function Register({setRegistered}) {
                             <>
                                 <p/>
                                 <label className='FormContent'>OTP:
-                                    <p/>
+                                    &nbsp;  {/* blank space */}
                                     <input
                                         required
                                         type='text'
@@ -374,6 +381,7 @@ export default function Register({setRegistered}) {
                                         value={otp}
                                         onChange={handleChange}
                                     ></input>
+                                    &nbsp;
                                     <button className='SubmitButton' onClick={sendOtp}>Resend OTP</button>
                                     <p className='Error'>{otpError}</p>    
                                 </label>

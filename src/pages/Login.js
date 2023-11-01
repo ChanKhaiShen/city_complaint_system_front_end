@@ -21,11 +21,15 @@ export default function Login({setHasToken}) {
             setEmailAddress(emailAddress);
             if (emailAddress.trim().length === 0)
                 setEmailAddressError('Please enter email address');
+            else
+                setEmailAddressError('');
         } else {
             const password = event.target.value;
             setPassword(password);
             if (password.trim().length === 0)
                 setPasswordError('Please enter password');
+            else
+                setPasswordError('');
         }
     }
 
@@ -127,6 +131,9 @@ export default function Login({setHasToken}) {
                     <h5>Not yet registered? </h5>
                     <button onClick={goToRegister}>Register</button>
                 </div>
+
+                <p/>
+                <a href='/setpassword'>Forgot password?</a>
             </div>
         </>
     );
