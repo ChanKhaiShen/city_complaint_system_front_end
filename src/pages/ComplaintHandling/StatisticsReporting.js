@@ -31,11 +31,21 @@ export default function StatisticsReporting() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    // General
     const [total, setTotal] = useState('');
+    const [statusCounts, setStatusCounts] = useState([]);
+    const [backgroundColors] = useState(['rgb(70, 50, 30)', 'rgb(70, 50, 60)', 'rgb(70, 50, 90)', 'rgb(70, 50, 120)', 'rgb(70, 50, 150)', 'rgb(70, 50, 180)']);
 
-    const [areaData, setAreaData] = useState([]);
-    const [categoryData, setCategoryData] = useState([]);
-    const [statusData, setStatusData] = useState([]);
+    // Area
+    const [areaCounts, setAreaCounts] = useState([]);
+    const [areaCountsByStatus, setAreaCountsByStatus] = useState({});
+
+    // Category
+    const [categoryCounts, setCategoryCounts] = useState([]);
+    const [categoryCountsByStatus, setCategoryCountsByStatus] = useState({});
+
+    // Table
+    const [areaCategoryStatusCounts, setAreaCategoryStatusCounts] = useState([]);
 
     useEffect(
         ()=>{
@@ -49,6 +59,7 @@ export default function StatisticsReporting() {
 
             const promises = [];
 
+            // Total
             promises.push(new Promise((resolve, reject)=>{
                 axios.get(
                     `${env.SERVER_URL}/complaintcount?${start}${end}`,
@@ -71,9 +82,10 @@ export default function StatisticsReporting() {
                 });
             }));
 
+            // By area
             promises.push(new Promise((resolve, reject)=>{
                 axios.get(
-                    `${env.SERVER_URL}/complaintcount?groupby=area${start}${end}`,
+                    `${env.SERVER_URL}/complaintcount?byarea=1&${start}${end}`,
                     {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -83,27 +95,71 @@ export default function StatisticsReporting() {
                     console.log('get count by area', result);
 
                     const counts = result.data.counts;
-                    const areaInfo = [];
+                    const areaCounts = [];
+
                     for (var i = 0; i < counts.length; i++) {
-                        const id = crypto.randomUUID();
-                        const name = counts[i]._id;
-                        const count = counts[i].count;
-                        const colors = [];
-                        for (var j = 0; j < 3; j++) {
-                            const randomNumber = Math.floor(Math.random() * 256);
-                            colors.push(randomNumber);
-                        }
-                        const backgroundColor = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-                        areaInfo.push({
-                            id: id,
-                            name: name,
-                            count: count,
-                            backgroundColor: backgroundColor
+                        areaCounts.push({
+                            id: crypto.randomUUID(),
+                            area: counts[i]._id.area,
+                            count: counts[i].count
                         });
                     }
-                    console.log(areaInfo);
-                    setAreaData(areaInfo);
-                    resolve();
+
+                    setAreaCounts(areaCounts.sort((a, b)=>{     // Sort count in descending order
+                        if (a.count < b.count) 
+                            return 1;
+                        else if (a.count > b.count) 
+                            return -1;
+                        return 0;
+                    })
+                    .slice(0, 6));
+
+                    axios.get(
+                        `${env.SERVER_URL}/complaintcount?byarea=1&bystatus=1&${start}${end}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        }
+                    ).then(response=>{
+                        console.log('get count by area by status', result);
+    
+                        const counts = response.data.counts;
+                        const topAreas = areaCounts.map(areaCount => areaCount.area);
+                        const areaCountsByStatus = {
+                            received: [],
+                            progressing: [],
+                            solved: []
+                        };
+                        
+                        for (var j = 0; j < topAreas.length; j++) {
+                            for (var k = 0; k < counts.length; k++) {
+                                if (counts[k]._id.area === topAreas[j]) {
+                                    if (counts[k]._id.status === 'Received') {
+                                        areaCountsByStatus.received[j] = counts[k].count;
+                                    }
+                                    else if (counts[k]._id.status === 'Progressing') {
+                                        areaCountsByStatus.progressing[j] = counts[k].count;
+                                    }
+                                    else if (counts[k]._id.status === 'Solved') {
+                                        areaCountsByStatus.solved[j] = counts[k].count;
+                                    }
+                                }
+                            }
+                        }
+
+                        setAreaCountsByStatus(areaCountsByStatus);
+                        resolve();
+    
+                    }).catch(error=>{
+                        console.log('get count by area by status', error);
+                        if (error.response != null && error.response.status === 401) {
+                            localStorage.removeItem('token');
+                            window.location.reload();
+                        }
+                        resolve();
+                    });
+
                 }).catch(error=>{
                     console.log('get count by area', error);
                     if (error.response != null && error.response.status === 401) {
@@ -114,9 +170,10 @@ export default function StatisticsReporting() {
                 });
             }));
 
+            // By category
             promises.push(new Promise((resolve, reject)=>{
                 axios.get(
-                    `   ${env.SERVER_URL}/complaintcount?groupby=category${start}${end}`,
+                    `   ${env.SERVER_URL}/complaintcount?bycategory=1&${start}${end}`,
                     {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -126,29 +183,74 @@ export default function StatisticsReporting() {
                     console.log('get count by category', result);
     
                     const counts = result.data.counts;
-                    const categoryInfo = [];
+                    const categoryCounts = [];
+
                     for (var i = 0; i < counts.length; i++) {
-                        const id = crypto.randomUUID();
-                        const name = counts[i]._id;
-                        const count = counts[i].count;
-                        const colors = [];
-                        for (var j = 0; j < 3; j++) {
-                            const randomNumber = Math.floor(Math.random() * 256);
-                            colors.push(randomNumber);
-                        }
-                        const backgroundColor = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-                        categoryInfo.push({
-                            id: id,
-                            name: name,
-                            count: count,
-                            backgroundColor: backgroundColor
+                        categoryCounts.push({
+                            id: crypto.randomUUID(),
+                            category: counts[i]._id.category,
+                            count: counts[i].count
                         });
                     }
-                    console.log(categoryInfo);
-                    setCategoryData(categoryInfo);
-                    resolve();
+
+                    setCategoryCounts(categoryCounts.sort((a, b)=>{
+                        if (a.count < b.count) 
+                            return 1;
+                        else if (a.count > b.count) 
+                            return -1;
+                        return 0;
+                    })
+                    .slice(0, 6));
+
+                    axios.get(
+                        `${env.SERVER_URL}/complaintcount?bycategory=1&bystatus=1&${start}${end}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        }
+                    ).then(response=>{
+                        console.log('get count by category by status', result);
+    
+                        const counts = response.data.counts;
+                        const topCategories = categoryCounts.map(categoryCount => categoryCount.category);
+                        const categoryCountsByStatus = {
+                            received: [],
+                            progressing: [],
+                            solved: []
+                        };
+                        
+                        for (var j = 0; j < topCategories.length; j++) {
+                            for (var k = 0; k < counts.length; k++) {
+                                if (counts[k]._id.category === topCategories[j]) {
+                                    if (counts[k]._id.status === 'Received') {
+                                        categoryCountsByStatus.received[j] = counts[k].count;
+                                    }
+                                    else if (counts[k]._id.status === 'Progressing') {
+                                        categoryCountsByStatus.progressing[j] = counts[k].count;
+                                    }
+                                    else if (counts[k]._id.status === 'Solved') {
+                                        categoryCountsByStatus.solved[j] = counts[k].count;
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log(categoryCountsByStatus);
+                        setCategoryCountsByStatus(categoryCountsByStatus);
+                        resolve();
+    
+                    }).catch(error=>{
+                        console.log('get count by category by status', error);
+                        if (error.response != null && error.response.status === 401) {
+                            localStorage.removeItem('token');
+                            window.location.reload();
+                        }
+                        resolve();
+                    });
+
                 }).catch(error=>{
-                    console.log('get count by area', error);
+                    console.log('get count by category', error);
                     if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
@@ -157,9 +259,10 @@ export default function StatisticsReporting() {
                 });
             }));
 
+            // By status
             promises.push(new Promise((resolve, reject)=>{
                 axios.get(
-                    `${env.SERVER_URL}/complaintcount?groupby=status${start}${end}`,
+                    `${env.SERVER_URL}/complaintcount?bystatus=1&${start}${end}`,
                     {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -169,29 +272,98 @@ export default function StatisticsReporting() {
                     console.log('get count by status', result);
 
                     const counts = result.data.counts;
-                    const statusInfo = [];
+                    const statusCounts = [];
+
                     for (var i = 0; i < counts.length; i++) {
-                        const id = crypto.randomUUID();
-                        const name = counts[i]._id;
-                        const count = counts[i].count;
-                        const colors = [];
-                        for (var j = 0; j < 3; j++) {
-                            const randomNumber = Math.floor(Math.random() * 256);
-                            colors.push(randomNumber);
-                        }
-                        const backgroundColor = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-                        statusInfo.push({
-                            id: id,
-                            name: name,
-                            count: count,
-                            backgroundColor: backgroundColor
+                        statusCounts.push({
+                            id: crypto.randomUUID(),
+                            status: counts[i]._id.status,
+                            count: counts[i].count
                         });
                     }
-                    console.log(statusInfo);
-                    setStatusData(statusInfo);
+
+                    setStatusCounts(statusCounts.sort((a, b)=>{
+                        if (a.count < b.count) 
+                            return 1;
+                        else if (a.count > b.count) 
+                            return -1;
+                        return 0;
+                    }));
+
                     resolve();
+
                 }).catch(error=>{
                     console.log('get count by status', error);
+                    if (error.response != null && error.response.status === 401) {
+                        localStorage.removeItem('token');
+                        window.location.reload();
+                    }
+                    resolve();
+                });
+            }));
+
+            // By area, category, status
+            promises.push(new Promise((resolve, reject)=>{
+                axios.get(
+                    `${env.SERVER_URL}/complaintcount?byarea=1&bycategory=1&bystatus=1&${start}${end}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    }
+                ).then(result=>{
+                    console.log('get count by area, category, status', result);
+
+                    const counts = result.data.counts;
+                    const areaCategoryStatusCounts = [];
+
+                    for (var i = 0; i < counts.length; i++) {
+                        const area = counts[i]._id.area;
+                        const category = counts[i]._id.category;
+
+                        if (areaCategoryStatusCounts.find(count => count.area === area && count.category === category) == null) {
+                            areaCategoryStatusCounts.push({
+                                id: crypto.randomUUID(),
+                                area: area,
+                                category: category,
+                            });
+                        }
+                    }
+
+                    for (var j = 0; j < areaCategoryStatusCounts.length; j++) {
+
+                        for (var k = 0; k < counts.length; k++) {
+
+                            if (counts[k]._id.area === areaCategoryStatusCounts[j].area && counts[k]._id.category === areaCategoryStatusCounts[j].category) {
+                                
+                                if (counts[k]._id.status === 'Received') {
+                                    areaCategoryStatusCounts[j].received = counts[k].count;
+                                }
+                                else if (counts[k]._id.status === 'Progressing') {
+                                    areaCategoryStatusCounts[j].progressing = counts[k].count;
+                                }
+                                else if (counts[k]._id.status === 'Solved') {
+                                    areaCategoryStatusCounts[j].solved = counts[k].count;
+                                }
+
+                            }
+
+                        }
+
+                        const receivedCount = areaCategoryStatusCounts[j].received == null ? 0 : areaCategoryStatusCounts[j].received;
+                        const progressingCount = areaCategoryStatusCounts[j].progressing == null ? 0 : areaCategoryStatusCounts[j].progressing;
+                        const solvedCount = areaCategoryStatusCounts[j].solved == null ? 0 : areaCategoryStatusCounts[j].solved;
+
+                        const totalCount = receivedCount + progressingCount + solvedCount;
+                        areaCategoryStatusCounts[j].total = totalCount;
+                    }
+
+                    console.log(areaCategoryStatusCounts);
+                    setAreaCategoryStatusCounts(areaCategoryStatusCounts);
+                    resolve();
+
+                }).catch(error=>{
+                    console.log('get count by area, category, status', error);
                     if (error.response != null && error.response.status === 401) {
                         localStorage.removeItem('token');
                         window.location.reload();
@@ -216,6 +388,64 @@ export default function StatisticsReporting() {
             setEndDate(event.target.value);
     }
 
+    function sortCounts(column, order, isNumber) {
+        const table = document.getElementById('allCounts');
+        const rows = table.getElementsByTagName('tr');
+        console.log(column, order);
+
+        var switching = true;
+
+        while (switching === true) {
+            switching = false;
+            var shouldSwitch = false;
+
+            for (var i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+
+                const a = rows[i].getElementsByTagName('td')[column];
+                const b = rows[i + 1].getElementsByTagName('td')[column];
+
+                const aText = a.textContent || a.innerText;
+                const bText = b.textContent || b.innerText;
+                console.log(aText, bText);
+
+                if (order === 'ascending') {
+                    if (isNumber === true) {
+                        if (parseInt(aText) > parseInt(bText)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                    else {
+                        if (aText.toUpperCase() > bText.toUpperCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    if (isNumber === true) {
+                        if (parseInt(aText) < parseInt(bText)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                    else {
+                        if (aText.toUpperCase() < bText.toUpperCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (shouldSwitch === true) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
     return (
         <div className='Content'>
             <h1>Statistics Reporting</h1>
@@ -224,7 +454,7 @@ export default function StatisticsReporting() {
                 <h1>Specify period of time: </h1>
                 <label className='ChartTop'>
                     Start Date: 
-                    &nbsp;   {/* blank space */}
+                    &nbsp;
                     <input
                         type='date'
                         name='startDate'
@@ -246,22 +476,21 @@ export default function StatisticsReporting() {
                 </label>
 
                 <h3>Total number of cases: {total}</h3>
-                <h3>Received: {statusData.find(status => status.name === 'Received') == null ? '0' : statusData.find(status => status.name === 'Received').count.toString()}</h3>
-                <h3>Still in progress: {statusData.find(status => status.name === 'Still in progress') == null ? '0' : statusData.find(status => status.name === 'Still in progress').count.toString()}</h3>
-                <h3>Solved: {statusData.find(status => status.name === 'Solved') == null ? '0' : statusData.find(status => status.name === 'Solved').count.toString()}</h3>
-                <h3>Cancelled: {statusData.find(status => status.name === 'Cancelled') == null ? '0' : statusData.find(status => status.name === 'Cancelled').count.toString()}</h3>
+                <h3>Received: {statusCounts.find(count => count.status === 'Received') == null ? '0' : statusCounts.find(count => count.status === 'Received').count.toString()}</h3>
+                <h3>Progressing: {statusCounts.find(count => count.status === 'Progressing') == null ? '0' : statusCounts.find(count => count.status === 'Progressing').count.toString()}</h3>
+                <h3>Solved: {statusCounts.find(count => count.status === 'Solved') == null ? '0' : statusCounts.find(count => count.status === 'Solved').count.toString()}</h3>
             </section>
             
             <section className="InlineChart">
-                <section className='ChartContent'>
+                <section className='PieChartContent'>
                     <Pie
                         data={
                             {
-                                labels: categoryData.map(category=>category.name),
+                                labels: categoryCounts.map(categoryCount => categoryCount.category),
                                 datasets: [
                                     {
-                                        backgroundColor: categoryData.map(category=>category.backgroundColor),
-                                        data: categoryData.map(category=>category.count)
+                                        backgroundColor: backgroundColors.slice(0, categoryCounts.length),
+                                        data: categoryCounts.map(categoryCount => categoryCount.count)
                                     }
                                 ]
                             }
@@ -292,15 +521,15 @@ export default function StatisticsReporting() {
                     ></Pie>
                 </section>
 
-                <section className='ChartContent'>
+                <section className='PieChartContent'>
                     <Pie
                         data={
                             {
-                                labels: areaData.map(area=>area.name),
+                                labels: areaCounts.map(areaCount => areaCount.area),
                                 datasets: [
                                     {
-                                        backgroundColor: areaData.map(area=>area.backgroundColor),
-                                        data: areaData.map(area=>area.count)
+                                        backgroundColor: backgroundColors.slice(0, areaCounts.length),
+                                        data: areaCounts.map(areaCount => areaCount.count)
                                     }
                                 ]
                             }
@@ -331,15 +560,15 @@ export default function StatisticsReporting() {
                     ></Pie>
                 </section>
 
-                <section className='ChartContent'>
+                <section className='PieChartContent'>
                     <Pie
                         data={
                             {
-                                labels: statusData.map(status=>status.name),
+                                labels: statusCounts.map(statusCount => statusCount.status),
                                 datasets: [
                                     {
-                                        backgroundColor: statusData.map(status=>status.backgroundColor),
-                                        data: statusData.map(status=>status.count)
+                                        backgroundColor: backgroundColors.slice(0, statusCounts.length),
+                                        data: statusCounts.map(statusCount => statusCount.count)
                                     }
                                 ]
                             }
@@ -371,133 +600,231 @@ export default function StatisticsReporting() {
                 </section>
             </section>
 
-            <section className='ChartContent'>
-                <Bar
-                    data={
-                        {
-                            labels: areaData.map(area=>area.name),
-                            datasets: [
-                                {
-                                    backgroundColor: areaData.map(area=>area.backgroundColor),
-                                    data: areaData.map(area=>area.count)
-                                }
-                            ]
+            <br/>
+            <section className="InlineChart">
+                <section className='BarChartContent'>
+                    <Bar
+                        data={
+                            {
+                                labels: areaCounts.map(areaCount => areaCount.area),
+                                datasets: [
+                                    {
+                                        label: 'Received',
+                                        backgroundColor: backgroundColors[0],
+                                        data: areaCountsByStatus.received,
+                                        stack: 'Stack 0'
+                                    },
+                                    {
+                                        label: 'Progressing',
+                                        backgroundColor: backgroundColors[1],
+                                        data: areaCountsByStatus.progressing,
+                                        stack: 'Stack 0'
+                                    },
+                                    {
+                                        label: 'Solved',
+                                        backgroundColor: backgroundColors[2],
+                                        data: areaCountsByStatus.solved,
+                                        stack: 'Stack 0'
+                                    }
+                                ]
+                            }
                         }
-                    }
-                    options={
-                        {
-                            indexAxis: 'y',
-                            responsive: true,
-                            plugins: {
-                                title: {
-                                    text: `Number of cases by area${startDate===''?'':' from '+startDate}${endDate===''?'':' until '+endDate}`,
-                                    display: true,
-                                    padding: {
-                                        top: 10,
-                                        bottom: 10
-                                    },
-                                    font: {
-                                        size: 30,
-                                        weight: 'bold'
-                                    },
-                                    color: 'black'
-                                },
-                                legend: {
-                                    display: false
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    min: 0,
+                        options={
+                            {
+                                indexAxis: 'y',
+                                responsive: true,
+                                plugins: {
                                     title: {
+                                        text: `Number of cases by area${startDate===''?'':' from '+startDate}${endDate===''?'':' until '+endDate}`,
                                         display: true,
-                                        text: 'Number of cases',
-                                        color: 'black',
+                                        padding: {
+                                            top: 10,
+                                            bottom: 10
+                                        },
                                         font: {
-                                            size: 15
-                                        }
+                                            size: 30,
+                                            weight: 'bold'
+                                        },
+                                        color: 'black'
+                                    },
+                                    legend: {
+                                        display: true
                                     }
                                 },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: 'Area',
-                                        color: 'black',
-                                        font: {
-                                            size: 15
-                                        }
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Number of cases',
+                                            color: 'black',
+                                            font: {
+                                                size: 15
+                                            }
+                                        },
+                                        stacked: true
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,                                            
+                                            text: 'Area',
+                                            color: 'black',
+                                            font: {
+                                                size: 15
+                                            }
+                                        },
+                                        stacked: true
                                     }
                                 }
                             }
                         }
-                    }
-                ></Bar>
+                    ></Bar>
+                </section>
+
+                <section className='BarChartContent'>
+                    <Bar
+                        data={
+                            {
+                                labels: categoryCounts.map(categoryCount => categoryCount.category),
+                                datasets: [
+                                    {
+                                        label: 'Received',
+                                        backgroundColor: backgroundColors[0],
+                                        data: categoryCountsByStatus.received,
+                                        stack: 'Stack 0'
+                                    },
+                                    {
+                                        label: 'Progressing',
+                                        backgroundColor: backgroundColors[1],
+                                        data: categoryCountsByStatus.progressing,
+                                        stack: 'Stack 0'
+                                    },
+                                    {
+                                        label: 'Solved',
+                                        backgroundColor: backgroundColors[2],
+                                        data: categoryCountsByStatus.solved,
+                                        stack: 'Stack 0'
+                                    }
+                                ]
+                            }
+                        }
+                        options={
+                            {
+                                indexAxis: 'y',
+                                responsive: true,
+                                plugins: {
+                                    title: {
+                                        text: `Number of cases by category${startDate===''?'':' from '+startDate}${endDate===''?'':' until '+endDate}`,
+                                        display: true,
+                                        padding: {
+                                            top: 10,
+                                            bottom: 10
+                                        },
+                                        font: {
+                                            size: 30,
+                                            weight: 'bold'
+                                        },
+                                        color: 'black'
+                                    },
+                                    legend: {
+                                        display: true
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Number of cases',
+                                            color: 'black',
+                                            font: {
+                                                size: 15
+                                            }
+                                        },
+                                        stacked: true
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,                                            
+                                            text: 'Category',
+                                            color: 'black',
+                                            font: {
+                                                size: 15
+                                            }
+                                        },
+                                        stacked: true
+                                    }
+                                }
+                            }
+                        }
+                    ></Bar>
+                </section>
             </section>
 
             <br/>
-            <section className='ChartContent'>
-                <Bar
-                    data={
-                        {
-                            labels: categoryData.map(category=>category.name),
-                            datasets: [
-                                {
-                                    backgroundColor: categoryData.map(category=>category.backgroundColor),
-                                    data: categoryData.map(category=>category.count)
-                                }
-                            ]
-                        }
-                    }
-                    options={
-                        {
-                            indexAxis: 'y',
-                            responsive: true,
-                            plugins: {
-                                title: {
-                                    text: `Number of cases by category${startDate===''?'':' from '+startDate}${endDate===''?'':' until '+endDate}`,
-                                    display: true,
-                                    padding: {
-                                        top: 10,
-                                        bottom: 10
-                                    },
-                                    font: {
-                                        size: 30,
-                                        weight: 'bold'
-                                    },
-                                    color: 'black'
-                                },
-                                legend: {
-                                    display: false
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    min: 0,
-                                    title: {
-                                        display: true,
-                                        text: 'Number of cases',
-                                        color: 'black',
-                                        font: {
-                                            size: 15
-                                        }
-                                    }
-                                },
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Category',
-                                        color: 'black',
-                                        font: {
-                                            size: 15
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ></Bar>
+            <section className="Box">
+                <h2>Case counts</h2>
+
+                <button className="SortButton" onClick={()=>{sortCounts(0, 'ascending')}}>Area (Ascending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(1, 'ascending')}}>Category (Ascending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(2, 'ascending', true)}}>Received (Ascending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(3, 'ascending', true)}}>Progressing (Ascending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(4, 'ascending', true)}}>Solved (Ascending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(5, 'ascending', true)}}>Total (Ascending)</button>
+                
+                <p/>
+                <button className="SortButton" onClick={()=>{sortCounts(0, 'descending')}}>Area (Descending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(1, 'descending')}}>Category (Descending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(2, 'descending', true)}}>Received (Descending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(3, 'descending', true)}}>Progressing (Descending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(4, 'descending', true)}}>Solved (Descending)</button>
+                &nbsp;
+                <button className="SortButton" onClick={()=>{sortCounts(5, 'descending', true)}}>Total (Descending)</button>
+
+                <br/>
+                <p/>
+                <div className='Table'>
+                    <table id="allCounts">
+                        <thead>
+                            <tr>
+                                <th>Area</th>
+                                <th>Category</th>
+                                <th>Received</th>
+                                <th>Progressing</th>
+                                <th>Solved</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {areaCategoryStatusCounts.map(count=>{
+                                return(
+                                    <tr key={count.id}>
+                                        <td>{count.area}</td>
+                                        <td>{count.category}</td>
+                                        <td>{count.received == null ? '0' : count.received.toString()}</td>
+                                        <td>{count.progressing == null ? '0' : count.progressing.toString()}</td>
+                                        <td>{count.solved == null ? '0' : count.solved.toString()}</td>
+                                        <td>{count.total.toString()}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+
+                    <br/>
+                </div>
             </section>
             
+            <br/>
         </div>
     );
 }

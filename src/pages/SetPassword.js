@@ -138,7 +138,7 @@ export default function SetPassword() {
     }
 
     function goToLogin() {
-        window.location.replace('/');
+        window.location.assign('/');
     }
 
     return (
@@ -178,7 +178,7 @@ export default function SetPassword() {
                             <>
                                 <p/>
                                 <label className="FormContent">OTP:
-                                    &nbsp;  {/* blank space */}
+                                    &nbsp;
                                     <input
                                         required
                                         type="text"

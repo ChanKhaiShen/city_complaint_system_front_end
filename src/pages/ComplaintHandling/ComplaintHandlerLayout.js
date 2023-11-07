@@ -15,10 +15,11 @@ export default function ComplaintHandlerLayout() {
         <>
             <div className="TopBar">
                 <h1>City Complaint System</h1>
+                <h2>Complaint Handler</h2>
                 <nav>
                     <ul>
-                        <li><Link className="Navigation" to="/">Check Complaint</Link></li>
-                        <li><Link className="Navigation" to="/manageaccount">ManageAccount</Link></li>
+                        <li><Link className="Navigation" to="/">Manage Account</Link></li>
+                        <li><Link className="Navigation" to="/checkcomplaint">Check Complaint</Link></li>
                         <li className='SwitchPage'><button onClick={logout}>Logout</button></li>
                     </ul>
                 </nav>

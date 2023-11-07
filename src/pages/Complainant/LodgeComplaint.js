@@ -48,7 +48,13 @@ export default function LodgeComplaint() {
                 ).then(results => {
                     const categories = results.data.categories;
                     console.log('get categories: ' + categories);
-                    setCategories(categories);
+                    setCategories(categories.sort((a, b) => {
+                        if (a.name.toLowerCase() > b.name.toLowerCase())
+                            return 1;
+                        if (a.name.toLowerCase() < b.name.toLowerCase())
+                            return -1;
+                        return 0;
+                    }));
                     resolve();
                 }).catch(error => {
                     console.log('categories error: ' + error);
@@ -70,7 +76,13 @@ export default function LodgeComplaint() {
                 ).then(results=>{
                     const areas = results.data.areas;
                     console.log('areas: ' + areas);
-                    setAreas(areas);
+                    setAreas(areas.sort((a, b) => {
+                        if (a.name.toLowerCase() > b.name.toLowerCase())
+                            return 1;
+                        if (a.name.toLowerCase() < b.name.toLowerCase())
+                            return -1;
+                        return 0;
+                    }));
                     resolve();
                 }).catch(error=>{
                     console.log('areas error: ' + error);
@@ -208,18 +220,21 @@ export default function LodgeComplaint() {
                 <p/>
 
                 <section className='Box'>
-                    <h1>Complaint Summary</h1>
-                    <h3>Title: {complaint.title}</h3>
-                    <p>Case ID: {complaint.caseId}</p>
-                    <p>Status: {complaint.status}</p>
-                    <p>Date: {complaint.date}</p>
-                    <h3>Details:</h3>
-                    <p>Category: {complaint.category}</p>
-                    <p>Description: {complaint.description}</p>
-                    <p>Expected Result: {complaint.expectedResult}</p>
-                    <p>Area: {complaint.area}</p>
-                    <p>Incident Address: {complaint.incidentAddress}</p>
-                    <p/>
+                    <div className='DetailsContent'>
+                        <h2>{complaint.title} (Status: {complaint.status})</h2>
+
+                        <p>Case ID: {complaint.caseId}</p>
+                        <p>Date: {new Date(complaint.created).toLocaleDateString()}</p>
+
+                        <br/>
+                        <h3>Complaint Details:</h3>
+                        <p>Category: {complaint.category}</p>
+                        <p>Description: {complaint.description}</p>
+                        <p>Expected Result: {complaint.expectedResult}</p>
+                        <p>Area: {complaint.area}</p>
+                        <p>Incident Address: {complaint.incidentAddress}</p>
+                    </div>
+                    <br/>
                     <button className='SubmitButton' onClick={done}>Done</button>
                 </section>
                 <p/>

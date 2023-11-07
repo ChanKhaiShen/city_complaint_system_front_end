@@ -458,7 +458,7 @@ export default function ManageSystem() {
                 <p/>
                 <form onSubmit={addCategory}>
                     <label className='FormContent'>Add: 
-                        &nbsp;  {/* blank space */}
+                        &nbsp;
                         <input
                             required
                             name='newCategory'
@@ -469,6 +469,7 @@ export default function ManageSystem() {
                             size={50}
                         ></input>
                     </label>
+                    &nbsp;
                     <input
                         type='submit'
                         className='AddButton'
@@ -526,6 +527,7 @@ export default function ManageSystem() {
                             size={50}
                         ></input>
                     </label>
+                    &nbsp;
                     <input
                         type='submit'
                         className='AddButton'

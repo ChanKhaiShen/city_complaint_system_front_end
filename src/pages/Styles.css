@@ -7,8 +7,17 @@
     text-align: center;
     font: bold;
     font-size: 50px;
-    padding: auto;
     padding-top: 50px;
+    padding-bottom: 5px;
+    margin: 0;
+    background-color: blanchedalmond;
+}
+
+.TopBar h2 {
+    text-align: center;
+    font: bold;
+    font-size: 25px;
+    color: rgb(69, 47, 24);
     padding-bottom: 40px;
     margin: 0;
     background-color: blanchedalmond;
@@ -83,10 +92,22 @@
     font-size: 15px;
 }
 
-.ChartContent {
+.PieChartContent {
     border: solid;
     padding: 20px;
     margin: 30px;
+    width: 400px;
+    height: 400px;
+    overflow: auto;
+}
+
+.BarChartContent {
+    border: solid;
+    padding: 20px;
+    margin: 30px;
+    width: 600px;
+    height: 300px;
+    overflow: auto;
 }
 
 .ChartTop {
@@ -97,7 +118,8 @@
 
 .InlineChart {
     display: inline-flex;
-    align-items: center;
+    align-items: stretch;
+    overflow: auto;
 }
 
 .Table {
@@ -141,4 +163,56 @@
 
 .DetailsContent {
     font-size: 20px;
+}
+
+.SortButton {
+    font-size: 15px;
+    padding: 10px;
+    background-color: rgb(116, 111, 104);
+    color: white;
+}
+
+.History {
+    margin: 20px;
+    display: block;
+    border: solid;
+    background-color: rgb(116, 111, 104);
+    max-height: 400px;
+    overflow: auto;
+}
+
+.HistoryContainer {
+    border-style: solid;
+    border-radius: 5px;
+    background-color: rgb(240, 239, 233);
+    padding: 5px;
+    margin: 10px;
+}
+
+.HistoryContainer strong {
+    font-size: 15px;
+    color: gray;
+}
+
+.HistoryContainer p {
+    font-size: 20px;
+    margin: 2px;
+}
+
+.HistoryContainer span {
+    font-size: 15px;
+    margin: 2px;
+}
+
+.HistoryDownBar {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding: 10px;
+}
+
+.MessageButton {
+    font-size: 20px;
+    background-color: rgb(69, 47, 24);
+    color: white;
 }

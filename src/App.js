@@ -45,7 +45,7 @@ export default function App() {
     }
   });
 
-  if (window.location.href === '/setpassword')
+  if (window.location.href === `http://localhost:${env.PORT}/setpassword`)
     return (
       <SetPassword />
     );
@@ -62,9 +62,9 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element = {<ComplainantLayout/>} >
-            <Route index element = {<LodgeComplaint/>} />
+            <Route index element = {<ManageAccount/>} />
+            <Route path="lodgecomplaint" element = {<LodgeComplaint/>} />
             <Route path="checkcomplaint" element = {<CheckComplaint/>} />
-            <Route path="manageaccount" element = {<ManageAccount/>} />
             <Route path="*" element = {<NoPage/>} />
           </Route>
           <Route path="*" element = {<NoPage/>} />
@@ -76,8 +76,8 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element = {<ComplaintHandlerLayout/>} >
-            <Route index element = {<CheckComplaint/>} />
-            <Route path="manageaccount" element = {<ManageAccount/>} />
+            <Route index element = {<ManageAccount/>} />
+            <Route path="checkcomplaint" element = {<CheckComplaint/>} />
             <Route path="*" element = {<NoPage/>} />
           </Route>
           <Route path="*" element = {<NoPage/>} />
@@ -89,10 +89,10 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element = {<AdministratorLayout/>} >
-            <Route index element = {<StatisticsReporting/>} />
+            <Route index element = {<ManageAccount/>} />
+            <Route path="statisticsreporting" element = {<StatisticsReporting/>} />
             <Route path="managesystem" element = {<ManageSystem/>} />
             <Route path="checkcomplaint" element = {<CheckComplaint/>} />
-            <Route path="manageaccount" element = {<ManageAccount/>} />
             <Route path="*" element = {<NoPage/>} />
           </Route>
           <Route path="*" element = {<NoPage/>} />
