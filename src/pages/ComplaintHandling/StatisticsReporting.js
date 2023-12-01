@@ -382,10 +382,22 @@ export default function StatisticsReporting() {
     );
 
     function handleChange(event) {
-        if (event.target.name === 'startDate')
-            setStartDate(event.target.value);
-        else
-            setEndDate(event.target.value);
+        if (event.target.name === 'startDate') {
+            if (new Date(event.target.value) > new Date(endDate) ) {
+                alert ('Start date after end date');
+            }
+            else {
+                setStartDate(event.target.value);
+            }
+        }
+        else {
+            if (new Date(event.target.value) < new Date(startDate) ) {
+                alert ('End date before start date');
+            }
+            else {
+                setEndDate(event.target.value);
+            }
+        }
     }
 
     function sortCounts(column, order, isNumber) {
@@ -460,7 +472,6 @@ export default function StatisticsReporting() {
                         name='startDate'
                         value={startDate}
                         onChange={handleChange}
-                        max={endDate !== '' ? endDate : (new Date(Date.now()).toISOString()).slice(0,10)}
                     ></input>
                 </label>
                 <label className='ChartTop'>
@@ -471,7 +482,6 @@ export default function StatisticsReporting() {
                         name='endDate'
                         value={endDate}
                         onChange={handleChange}
-                        min={startDate !== '' ? startDate : (new Date(Date.now()).toISOString()).slice(0,10)}
                     ></input>
                 </label>
 

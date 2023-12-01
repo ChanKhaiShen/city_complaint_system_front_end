@@ -159,11 +159,21 @@ export default function CheckComplaint() {
                 break;
 
             case 'startDate':
-                setStartDate(event.target.value);
+                if (new Date(event.target.value) > new Date(endDate) ) {
+                    alert ('Start date after end date');
+                }
+                else {
+                    setStartDate(event.target.value);
+                }
                 break;
 
             case 'endDate':
-                setEndDate(event.target.value);
+                if (new Date(event.target.value) < new Date(startDate) ) {
+                    alert ('End date after start date');
+                }
+                else {
+                    setEndDate(event.target.value);
+                }
                 break;
 
             case 'filterTitle':
@@ -252,9 +262,15 @@ export default function CheckComplaint() {
     }
 
     if (complaints.length > 0 && searchParams.get('case_id') != null) {
-        return (
-            <ComplaintDetails selectedComplaint={complaints.find(complaint => complaint.id === searchParams.get('case_id'))}></ComplaintDetails>
-        );
+        if (complaints.find(complaint => complaint.id === searchParams.get('case_id')) != null) {
+            return (
+                <ComplaintDetails selectedComplaint={complaints.find(complaint => complaint.id === searchParams.get('case_id'))}></ComplaintDetails>
+            );
+        }
+        else {
+            alert('Complaint case not available');
+            setSearchParams({});
+        }
     }
     
     return (
@@ -287,7 +303,6 @@ export default function CheckComplaint() {
                         name='startDate'
                         value={startDate}
                         onChange={handleChange}
-                        max={endDate !== '' ? endDate : (new Date(Date.now()).toISOString()).slice(0,10)}
                     ></input>
                 </label>
 
@@ -300,7 +315,6 @@ export default function CheckComplaint() {
                         name='endDate'
                         value={endDate}
                         onChange={handleChange}
-                        min={startDate !== '' ? startDate : (new Date(Date.now()).toISOString()).slice(0,10)}
                     ></input>
                 </label>
             </section>

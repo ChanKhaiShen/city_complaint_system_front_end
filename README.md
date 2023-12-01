@@ -1,3 +1,13 @@
+# City Complaint System (Front End)
+
+City complaint system has Front End (React.js) and Server End (Express.js). This is the Front End.
+
+#
+
+This folder is using React framework. All files in /src/pages folder are written by me. App.js is edited by me. The other files and all information below this line, is originated from the React framework.
+
+#
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
