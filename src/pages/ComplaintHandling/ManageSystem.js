@@ -442,7 +442,7 @@ export default function ManageSystem() {
                                         <td>{category.name}</td>
                                         <td>{category.creatorName}</td>
                                         <td>{category.creatorEmail}</td>
-                                        <td>{new Date(category.created).toLocaleDateString()}</td>
+                                        <td>{new Date(category.created).toISOString().slice(0, 10)}</td>
                                         <td>
                                             <button
                                                 className='DeleteButton'
@@ -500,7 +500,7 @@ export default function ManageSystem() {
                                         <td>{area.name}</td>
                                         <td>{area.creatorName}</td>
                                         <td>{area.creatorEmail}</td>
-                                        <td>{new Date(area.created).toLocaleDateString()}</td>
+                                        <td>{new Date(area.created).toISOString().slice(0, 10)}</td>
                                         <td>
                                             <button
                                                 className='DeleteButton'
@@ -556,7 +556,7 @@ export default function ManageSystem() {
                                     <tr key={complaintHandler.id}>
                                         <td>{complaintHandler.name}</td>
                                         <td>{complaintHandler.emailAddress}</td>
-                                        <td>{new Date(complaintHandler.created).toLocaleDateString()}</td>
+                                        <td>{new Date(complaintHandler.created).toISOString().slice(0, 10)}</td>
                                         <td>
                                             <button
                                                 className='DeleteButton'

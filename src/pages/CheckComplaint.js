@@ -220,6 +220,7 @@ export default function CheckComplaint() {
 
                 if (order === 'ascending') {
                     if (isDate === true) {
+                        console.log((new Date(aText)) , (new Date(bText)));
                         if ((new Date(aText)) > (new Date(bText))) {
                             shouldSwitch = true;
                             break;
@@ -234,6 +235,7 @@ export default function CheckComplaint() {
                 }
                 else {
                     if (isDate === true) {
+                        console.log((new Date(aText)) , (new Date(bText)));
                         if ((new Date(aText)) < (new Date(bText))) {
                             shouldSwitch = true;
                             break;
@@ -452,7 +454,7 @@ export default function CheckComplaint() {
                                     <tr key={complaint.id}>
                                         <td>{complaint.caseId}</td>
                                         <td>{complaint.title}</td>
-                                        <td>{new Date(complaint.created).toLocaleDateString()}</td>
+                                        <td>{new Date(complaint.created).toISOString().slice(0, 10)}</td>
                                         <td>{complaint.category}</td>
                                         <td>{complaint.area}</td>
                                         <td>{complaint.status}</td>
